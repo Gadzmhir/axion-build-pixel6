@@ -6,33 +6,24 @@ jobs:
       - image: cimg/android:2026.03
     resource_class: large
     working_directory: ~/workspace
-    environment:
-      _JAVA_OPTIONS: "-Xmx16g"
     steps:
       - checkout
-      
       - run:
-          name: "Environment and Build Tools Provisioning"
+          name: "Provisioning Tools"
           command: |
             sudo apt-get update
             sudo apt-get install -y bc bison build-essential curl flex g++-multilib gcc-multilib git gnupg gperf lib32ncurses5-dev lib32z1-dev liblz4-tool libncurses5 libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev python-is-python3 python3-pip repo
-            
       - run:
-          name: "Configure Developer Credentials"
+          name: "Developer Credentials"
           command: |
-            git config --global user.name "CircleCI Automated Builder"
+            git config --global user.name "Builder"
             git config --global user.email "builder@circleci.local"
-            
       - run:
-          name: "Initialize AxionOS Core Manifest"
+          name: "Sync and Build"
+          no_output_timeout: 45m
           command: |
             mkdir ~/axion && cd ~/axion
             repo init -u https://github.com -b lineage-23.2 --depth=1 --git-lfs
-            
-      - run:
-          name: "Inject Pixel 6 Oriole Device Mapping"
-          command: |
-            cd ~/axion
             mkdir -p .repo/local_manifests
             cat <<EOF > .repo/local_manifests/oriole.xml
             <?xml version="1.0" encoding="UTF-8"?>
@@ -41,22 +32,14 @@ jobs:
               <project name="AxionAOSP/AxionOS_Pixels" path="device/google/oriole" remote="github" revision="main" clone-depth="1" />
             </manifest>
             EOF
-            
-      - run:
-          name: "Execute High-Speed Repo Sync"
-          command: |
-            cd ~/axion
             repo sync -c -j$(nproc) --force-sync --no-clone-bundle --no-tags --current-branch
-            
-      - run:
-          name: "Compile AxionOS 2.9 (Noesis)"
-          no_output_timeout: 45m
-          command: |
-            cd ~/axion
             . build/envsetup.sh
             axion oriole userdebug gms
             m vendorbootimage target-files-package
-            
       - store_artifacts:
           path: ~/axion/out/target/product/oriole/
-          destination: axion_build_output
+
+workflows:
+  main_workflow:
+    jobs:
+      - build
