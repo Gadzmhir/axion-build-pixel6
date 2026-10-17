@@ -27,7 +27,7 @@ jobs:
           name: "Initialize AxionOS Core Manifest"
           command: |
             mkdir ~/axion && cd ~/axion
-            repo init -u https://github.com/AxionAOSP/android.git -b lineage-23.2 --depth=1 --git-lfs
+            repo init -u https://github.com -b lineage-23.2 --depth=1 --git-lfs
             
       - run:
           name: "Inject Pixel 6 Oriole Device Mapping"
@@ -60,9 +60,8 @@ jobs:
       - store_artifacts:
           path: ~/axion/out/target/product/oriole/
           destination: axion_build_output
-          
+
 workflows:
-  version: 2
   build_pipeline:
     jobs:
       - compile_axion_oriole
