@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  compile_axion_oriole:
+  build:
     docker:
       - image: cimg/android:2026.03
     resource_class: large
@@ -60,8 +60,3 @@ jobs:
       - store_artifacts:
           path: ~/axion/out/target/product/oriole/
           destination: axion_build_output
-
-workflows:
-  build_pipeline:
-    jobs:
-      - compile_axion_oriole
