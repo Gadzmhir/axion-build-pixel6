@@ -1,5 +1,5 @@
 
-name: GitHub Runner Disk Test
+name: GitHub Runner Storage Investigation
 
 on:
   workflow_dispatch:
@@ -8,13 +8,27 @@ jobs:
   disk-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Check runner resources
+      - name: Inspect available storage
         run: |
-          echo "=== CPU ==="
-          nproc
-          echo "=== RAM ==="
-          free -h
-          echo "=== DISK ==="
+          echo "=== DISK SPACE BEFORE ==="
           df -h /
-          echo "=== AVAILABLE SPACE ==="
-          df -BG / 
+
+          echo "=== LARGEST TOP-LEVEL DIRECTORIES ==="
+          sudo du -xhd1 /usr /opt /home /tmp 2>/dev/null | sort -h | tail -n 35
+
+          echo "=== COMMONLY LARGE PREINSTALLED TOOLS ==="
+          for path in \
+            /usr/local/lib/android \
+            /opt/hostedtoolcache \
+            /usr/share/dotnet \
+            /usr/local/share/boost \
+            /usr/share/swift \
+            /home/runner/.cache
+          do
+            if [ -e "$path" ]; then
+              sudo du -sh "$path" 2>/dev/null
+            fi
+          done
+
+          echo "=== DISK SPACE AFTER INSPECTION ==="
+          df -h /
