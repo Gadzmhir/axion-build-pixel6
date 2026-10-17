@@ -25,7 +25,7 @@ jobs:
             mkdir ~/axion && cd ~/axion
             repo init -u https://github.com -b lineage-23.2 --depth=1 --git-lfs
             mkdir -p .repo/local_manifests
-            cat \<<EOF > .repo/local_manifests/oriole.xml
+            cat << 'EOF' > .repo/local_manifests/oriole.xml
             <?xml version="1.0" encoding="UTF-8"?>
             <manifest>
               <project name="AxionAOSP-devices/android_device_google_gs101" path="device/google/gs101" remote="github" revision="lineage-23.2" clone-depth="1" />
