@@ -1,0 +1,20 @@
+
+name: GitHub Runner Disk Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  disk-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check runner resources
+        run: |
+          echo "=== CPU ==="
+          nproc
+          echo "=== RAM ==="
+          free -h
+          echo "=== DISK ==="
+          df -h /
+          echo "=== AVAILABLE SPACE ==="
+          df -BG / 
